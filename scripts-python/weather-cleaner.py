@@ -25,33 +25,38 @@ def clean_precip_col(df):
 
     # possibly improvement: rather than abrupt change, linearly extrapolate
     for i in range(len(precip_instances)-1):
-        init_index = precip_instances[i]
-        final_index = precip_instances[i+1]
+        beg = precip_instances[i]+1
+        end = precip_instances[i+1]
 
-        init_val = float(precip_col.at[init_index])
-        final_val = float(precip_col.at[final_index])
+        init_val = float(precip_col.at[beg-1])
+        final_val = float(precip_col.at[end])
 
         if init_val == final_val:
             # if initial and final value same, just replace M with either
-            df.loc[init_index+1:final_index, 'p01m'] = init_val
+            df.loc[beg:end, 'p01m'] = init_val
         else:
-            total_interval = final_index - init_index - 1
+            total_interval = end - beg
+            
+            if total_interval == 0:
+                continue
+            
             if total_interval % 2 == 0:
-                df.loc[init_index+1:total_interval/2, 'p01m'] = init_val
-                df.loc[total_interval/2:final_index, 'p01m'] = final_val
+                mid = beg + total_interval/2
+                df.loc[beg:mid, 'p01m'] = init_val
+                df.loc[mid:end, 'p01m'] = final_val
             else:
-                med_index = statistics.median([init_index, final_index])
-                med_val = statistics.median([init_val, final_val])
-                df.loc[med_index, 'p01m'] = med_val
+                mid = statistics.median(range(beg, end))
+                mid_val = statistics.median([init_val, final_val])
+                df.loc[mid, 'p01m'] = mid_val
                 if total_interval > 1:
-                    df.loc[init_index+1:med_index, 'p01m'] = init_val
-                    df.loc[med_index+1:final_index, 'p01m'] = final_val
+                    df.loc[beg:mid, 'p01m'] = init_val
+                    df.loc[mid+1:end, 'p01m'] = final_val
 
     # Take care of remaining missing values, if any
-    fin_index = precip_instances[-1]
-    if fin_index < len(precip_col):
-        fin_val = float(precip_col.at[fin_index])
-        df.loc[fin_index+1:, 'p01m'] = fin_val
+    last_index = precip_instances[-1]
+    if last_index < len(precip_col):
+        last_val = float(precip_col.at[last_index])
+        df.loc[last_index+1:, 'p01m'] = last_val
 
 def change_col_names(df):
     df.rename(
