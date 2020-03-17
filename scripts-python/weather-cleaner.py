@@ -1,6 +1,7 @@
 import argparse
 import pandas as pd
 import statistics
+import time
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -36,14 +37,21 @@ def clean_precip_col(df):
         else:
             total_interval = final_index - init_index - 1
             if total_interval % 2 == 0:
-                df.loc[init_val:total_interval / 2, 'p01m'] = init_val
-                df.loc[total_interval / 2:final_val, 'p01m'] = final_val
+                df.loc[init_index+1:total_interval/2, 'p01m'] = init_val
+                df.loc[total_interval/2:final_index, 'p01m'] = final_val
             else:
                 med_index = statistics.median([init_index, final_index])
                 med_val = statistics.median([init_val, final_val])
-                df.loc[init_val:med_index, 'p01m'] = init_val
                 df.loc[med_index, 'p01m'] = med_val
-                df.loc[med_index+1:final_val, 'p01m'] = final_val
+                if total_interval > 1:
+                    df.loc[init_index+1:med_index, 'p01m'] = init_val
+                    df.loc[med_index+1:final_index, 'p01m'] = final_val
+
+    # Take care of remaining missing values, if any
+    fin_index = precip_instances[-1]
+    if fin_index < len(precip_col):
+        fin_val = float(precip_col.at[fin_index])
+        df.loc[fin_index+1:, 'p01m'] = fin_val
 
 def change_col_names(df):
     df.rename(
@@ -56,6 +64,7 @@ def change_col_names(df):
     )
                 
 if __name__ == '__main__':
+    start = time.time()
     args = get_args()
     
     df = pd.read_csv(args.data_loc, parse_dates=['valid'])
@@ -64,3 +73,5 @@ if __name__ == '__main__':
     change_col_names(df)
     
     df.to_csv(args.target_loc, index=False)
+    end = time.time()
+    print(f'This script took {end - start:.2f} seconds to complete')
