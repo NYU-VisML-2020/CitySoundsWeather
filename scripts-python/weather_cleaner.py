@@ -3,12 +3,14 @@ import pandas as pd
 import statistics
 import time
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('data_loc')
     parser.add_argument('target_loc')
 
     return parser.parse_args()
+
 
 def clean_precip_col(df):
     precip_col = df['p01m']
@@ -36,10 +38,10 @@ def clean_precip_col(df):
             df.loc[beg:end, 'p01m'] = init_val
         else:
             total_interval = end - beg
-            
+
             if total_interval == 0:
                 continue
-            
+
             if total_interval % 2 == 0:
                 mid = beg + total_interval/2
                 df.loc[beg:mid, 'p01m'] = init_val
@@ -58,6 +60,7 @@ def clean_precip_col(df):
         last_val = float(precip_col.at[last_index])
         df.loc[last_index+1:, 'p01m'] = last_val
 
+
 def change_col_names(df):
     df.rename(
         columns={
@@ -67,16 +70,21 @@ def change_col_names(df):
         },
         inplace=True
     )
-                
-if __name__ == '__main__':
+
+
+def main():
     start = time.time()
     args = get_args()
-    
+
     df = pd.read_csv(args.data_loc, parse_dates=['valid'])
-    
+
     clean_precip_col(df)
     change_col_names(df)
-    
+
     df.to_csv(args.target_loc, index=False)
     end = time.time()
     print(f'This script took {end - start:.2f} seconds to complete')
+
+
+if __name__ == '__main__':
+    main()
