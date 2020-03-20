@@ -1,5 +1,7 @@
 # Our additions
 data/
+private/
+sonyc/
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
