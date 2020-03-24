@@ -7,6 +7,9 @@ The code in this project expects the following directory structure:
 - `weather-raw.csv` - raw weather data
 - `weather.csv` - cleaned weather data
 
+`./library` should contain:
+- `searcher.py`
+
 `./private` should contain:
 - `decrypt.py`
 - `keys/`
