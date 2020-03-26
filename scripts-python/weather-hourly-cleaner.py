@@ -2,6 +2,7 @@ import argparse
 import pandas as pd
 import time
 
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('data_loc')
@@ -9,20 +10,22 @@ def get_args():
 
     return parser.parse_args()
 
+
 def clean_precip_col(df):
     precip_col = df['p01m']
-    
+
     # Replace trace values, T, with 0.00
     precip_t_count = precip_col[precip_col == 'T'].count()
     if precip_t_count > 0:
         print(f"{precip_t_count} trace values in 'p01m' column")
         df.replace({'p01m': {'T': 0.00}}, inplace=True)
-        
+
     # Replace missing values, M, with 0.00
     precip_m_count = precip_col[precip_col == 'M'].count()
     if precip_m_count > 0:
         print(f"{precip_m_count} missing values in 'p01m' column")
         df.replace({'p01m': {'M': 0.00}}, inplace=True)
+
 
 def change_col_names(df):
     df.rename(
@@ -33,6 +36,7 @@ def change_col_names(df):
         },
         inplace=True
     )
+
 
 def main():
     start = time.time()
@@ -46,6 +50,7 @@ def main():
     df.to_csv(args.target_loc, index=False)
     end = time.time()
     print(f'This script took {end - start:.2f} seconds to complete')
+
 
 if __name__ == '__main__':
     main()
