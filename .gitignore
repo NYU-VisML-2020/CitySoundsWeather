@@ -3,6 +3,7 @@ data/
 private/
 sonyc/
 .DS_Store
+sounds/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
