@@ -3,7 +3,6 @@ import h5py
 import os
 import pandas as pd
 import sys
-import ray
 
 sys.path.append('/'.join(os.getcwd().split('/')[:-1]))
 from private.decrypt import readEncryptedTarAudioFile
@@ -11,7 +10,7 @@ from private.decrypt import readEncryptedTarAudioFile
 def convert_to_epoch(stamp):
     return (stamp - pd.Timestamp('1970-01-01')) // pd.Timedelta('1s')
 
-@ray.remote
+# NOT FOR USE
 def save_file(arg):
     path, index, audio_path, audio_key = arg
     fname = path + f'{index}.mp3'
