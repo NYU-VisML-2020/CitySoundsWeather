@@ -1,3 +1,4 @@
+import random
 import time
 
 from concurrent import futures
@@ -5,6 +6,8 @@ from concurrent import futures
 import h5py
 import numpy as np
 import pandas as pd
+
+random.seed(5176679560041666191) # I hashed 'hedgehog' and this number came up
 
 def convert_to_epoch(stamp):
     return (stamp - pd.Timestamp('1970-01-01')) // pd.Timedelta('1s')
@@ -29,7 +32,7 @@ def match_closest_instances(node_indices, rain_df):
         ) for node, indices in node_indices.items()
     }
 
-def create_rain_df(node_indices, rain_df, closest_instances):
+def create_df(node_indices, rain_df, closest_instances):
     skeleton = []
     for node, indices in node_indices.items():
         instance_indices = closest_instances[node] # (node_indices index, rain_df index) tuple
@@ -51,14 +54,22 @@ def main():
         parse_dates=['datetime[utc]']
     )
     weather_df['datetime[epoch]'] = weather_df['datetime[utc]'].map(convert_to_epoch)
-    weather_df = weather_df[['datetime[utc]', 'datetime[epoch]', 'precipitation[mm]']]
+    weather_df['bool'] = weather_df['precipitation[mm]'] == 0
 
-    # get top rainy instances of 2017
-    condition_rained = weather_df['precipitation[mm]'] > 0.0
+    norain_dates = weather_df.groupby(weather_df['datetime[utc]'].apply(lambda _: _.date()))['bool'].apply(all)
+    # get only True values
+    norain_dates = norain_dates[norain_dates]
+
+    condition_nonrainy = weather_df['datetime[utc]'].apply(lambda _: _.date() in set(norain_dates.index))
     condition_2017 = weather_df['datetime[epoch]'] < convert_to_epoch(pd.Timestamp('2018-01-01'))
 
-    reduced_weather_df = weather_df[condition_rained & condition_2017].reset_index(drop=True)
-
+    # int(len(pd.read_csv('../data/audio-paths-rained.csv')) / 24) == 1191
+    N = 1300    
+    reduced_weather_df = (weather_df[condition_nonrainy & condition_2017]
+        .sample(N, random_state=517667956)
+        .reset_index(drop=True))
+    reduced_weather_df = reduced_weather_df[['datetime[utc]', 'datetime[epoch]', 'precipitation[mm]']]
+        
     with open('../data/nodes.txt', 'r') as f:
         lines = f.readlines()
         nodes = set(l.strip().split(' ')[0] for l in lines)
@@ -82,16 +93,16 @@ def main():
     }
 
     available_nodes = nodes - unavailable_nodes - small_nodes
-
+    
     read_start = time.time()
     with futures.ThreadPoolExecutor(max_workers=24) as executor:
         node_indices = dict(executor.map(read_index_file, available_nodes))
     print(f'Total time elapsed: {time.time() - read_start:.2f} seconds')
-
+    
     closest_instances = match_closest_instances(node_indices, reduced_weather_df)
 
-    print('Saving to ../data/audio-paths-rained.csv')
-    create_rain_df(node_indices, reduced_weather_df, closest_instances).to_csv('../data/audio-paths-rained.csv', index=False)
+    print('Saving to ../data/audio-paths-nonrained.csv')
+    create_df(node_indices, reduced_weather_df, closest_instances).to_csv('../data/audio-paths-nonrained.csv', index=False)
     
 if __name__ == '__main__':
     main()
