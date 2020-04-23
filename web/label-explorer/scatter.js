@@ -1,3 +1,4 @@
+// References:
 // Follows the reusable charts pattern: https://bost.ocks.org/mike/chart/
 // Grid based on https://observablehq.com/@d3/scatterplot
 
@@ -5,8 +6,8 @@ function scatter() {
   let margin = {
     top: 20,
     bottom: 20,
-    left: 40,
-    right: 0
+    left: 20,
+    right: 20
   };
 
   let width = 500 - margin.left - margin.right;
@@ -22,29 +23,14 @@ function scatter() {
       const lightgray = '#dcdcdc';
       
       const node = nodeData.node.slice(10, -6);
-      const data = nodeData.values;
 
-      // create scales
-
-      const x = d3.scaleLinear()
-          .domain(precipitationExtent).nice()
-          .range([0, width]);
-
-      const y = d3.scaleLinear()
-          .domain([0, 1])
-          .range([height, 0]);
+      const data = nodeData.values.filter(d => {
+        const rain = d['precipitation[mm]'];
+        return rain >= precipitationExtent[0] && rain <= precipitationExtent[1];
+      });
       
-      // create axes
-
-      const xAxis = d3.axisBottom(x)
-          .ticks(3)
-          .tickSize(0);
-
-      const yAxis = d3.axisLeft(y)
-          .ticks(3, '%')
-          .tickSize(0);
-
-      // set up title, axes, grid.
+     
+      // one time setup
 
       const g = d3.select(this)
         .selectAll('.scatter-plot')
@@ -80,8 +66,30 @@ function scatter() {
                   .attr('class', 'circles')
               )
         )
-          .attr('class', 'scatter-plot');
+          .attr('class', 'scatter-plot hover-area')
+          .attr('transform', `translate(${margin.left}, ${margin.top})`);
+      
+      // create scales
 
+      const x = d3.scaleLinear()
+          .domain(precipitationExtent).nice()
+          .range([0, width]);
+
+      const y = d3.scaleLinear()
+          .domain([0, 1])
+          .range([height, 0]);
+      
+      // create axes
+
+      const xAxis = d3.axisBottom(x)
+          .ticks(3)
+          .tickPadding(5)
+          .tickSize(0);
+
+      const yAxis = d3.axisLeft(y)
+          .ticks(3)
+          .tickPadding(5)
+          .tickSize(0);
       
       g.select('.title')
         .attr('x', width / 2)
@@ -102,6 +110,8 @@ function scatter() {
           .call(yAxis)
           .call(g => g.selectAll('.domain').remove())
 
+      // add axis labels to first chart
+
       if (index === 0) {
         g.select('.x.axis')
           .select('.axis-label')
@@ -120,9 +130,10 @@ function scatter() {
             .attr('y', height / 2)
             .attr('transform', `rotate(-90, ${-35}, ${height / 2})`)
             .attr('fill', 'black')
-            .text('probability');
+            .text('label probability');
       }
 
+      // draw grid
 
       const grid = g.select('.grid');
 
