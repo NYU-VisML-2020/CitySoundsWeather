@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Precipitation vs. Class</title>
+        
+        <link rel="stylesheet" href="style.css">
+
+        <script src="d3/d3.js" defer></script>
+        <script src="d3/d3-array.js" defer></script>
+        
+        <script src="scatter.js" defer></script>
+        <script src="histogram.js" defer></script>
+        
+        <script src="main.js" defer></script>
+    </head>
+
+    <body>
+        <div id="container">
+            <div id="controls">
+                <h1>Label Explorer</h1>
+                
+                <div class="section">
+                    <p>Chart</p>
+                    <select id="chart-select">
+                        <option value="histogram">Histogram</option>
+                        <option value="scatter">Scatter plot</option>
+                    </select>
+                </div>
+ 
+                <div class="section">
+                    <p>Label</p>
+                    <select id="label-select"></select>
+                </div>
+
+                <div id="precip-filtering" class="section hide">
+                    <p>Precipitation (mm)</p>
+ 
+                    <div class="sub-section">
+                        <input type="number" id="min-rain"  step="0.01" min="0" />
+                        -
+                        <input type="number" id="max-rain" step="0.01" min="0" />
+                    </div>
+
+                    <div class="sub-section">
+                        <button id="filter">Filter</button>
+                        <button id="reset">Reset</button>
+                    </div>
+                </div>
+
+                <div id="normalize" class="section">
+                    <label>
+                        <input type="checkbox" id="normalize-checkbox" />
+                        Normalize y scale
+                    </label> 
+                </div>
+            </div>
+
+            <div id="vis"></div>
+        </div>
+    </body>
+</html>
