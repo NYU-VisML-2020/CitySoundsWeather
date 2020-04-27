@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --nodes=1
+#SBATCH --mem=12GB
+#SBATCH --job-name=extractFeatures
+#SBATCH --output=slurm_%j.out
+
+# Before running this create a dir connections-in-ml/ in $SCRATCH.
+# Then create dirs data/ and nodes/ and move extract-relevant-embedding.py there.
+# In data/, place audio-paths-nonrained.csv and audio-paths-rained.csv
+
+module purge
+module load anaconda3/5.3.1
+
+cd $SCRATCH/connections-in-ml/
+
+python extract-relevant-embeddings.py
