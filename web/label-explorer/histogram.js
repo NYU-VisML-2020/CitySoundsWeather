@@ -16,6 +16,7 @@ function histogram() {
   let height = 500 - margin.top - margin.bottom;
   let x = d3.scaleLinear();
   let globalYMax = 0;
+  let color;
   
   function chart(selection) {
     selection.each(function(nodeData, index) {
@@ -26,7 +27,6 @@ function histogram() {
       const innerMargin = { top: 5, bottom: 5 };
       
       // data preparation
-      const node = nodeData.node.slice(10, -6);
       const combined = nodeData.bins;
       
       const types = combined.map(d => d.type);
@@ -48,19 +48,16 @@ function histogram() {
           .domain([0, yMax])
           .range([chartHeight, 0]);
 
-      const color = d3.scaleOrdinal()
-          .domain(types)
-          .range(d3.schemeCategory10);
       
       x.range([0, width]);
       
       // create axes
 
       const xAxis = d3.axisBottom(x)
-          .ticks(5)
+          .ticks(5);
 
       const yAxis = d3.axisLeft(y)
-          .ticks(3)
+          .ticks(3, '~s');
 
       // one time set up
 
@@ -87,8 +84,8 @@ function histogram() {
 
       g.select('.title')
         .attr('x', width / 2)
-        .attr('y', -2)
-        .text(node);
+        .attr('y', 0)
+        .text(nodeData.key);
 
       g.select('.background')
         .attr('width', width)
@@ -153,7 +150,6 @@ function histogram() {
             .text(d => d.type);
       }
 
-
       // draw bars
 
       charts.selectAll('rect')
@@ -187,6 +183,12 @@ function histogram() {
   chart.yMax = function(yM) {
     if (!arguments.length) return yMax;
     globalYMax = yM;
+    return chart;
+  }
+  
+  chart.color = function(c) {
+    if (!arguments.length) return color;
+    color = c;
     return chart;
   }
 

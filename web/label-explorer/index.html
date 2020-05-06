@@ -9,7 +9,6 @@
         <script src="d3/d3.js" defer></script>
         <script src="d3/d3-array.js" defer></script>
         
-        <script src="scatter.js" defer></script>
         <script src="histogram.js" defer></script>
         
         <script src="main.js" defer></script>
@@ -19,33 +18,26 @@
         <div id="container">
             <div id="controls">
                 <h1>Label Explorer</h1>
-                
+ 
                 <div class="section">
-                    <p>Chart</p>
-                    <select id="chart-select">
-                        <option value="histogram">Histogram</option>
-                        <option value="scatter">Scatter plot</option>
+                  <p>Legend</p>
+                  <div id="legend"></div>
+                </div>
+
+                <div class="section">
+                    <p>Group By</p>
+                    <select id="group-by-select">
+                        <option value="node">sensor</option>
+                        <option value="label">label</option>
                     </select>
                 </div>
- 
+
                 <div class="section">
-                    <p>Label</p>
-                    <select id="label-select"></select>
-                </div>
-
-                <div id="precip-filtering" class="section hide">
-                    <p>Precipitation (mm)</p>
- 
-                    <div class="sub-section">
-                        <input type="number" id="min-rain"  step="0.01" min="0" />
-                        -
-                        <input type="number" id="max-rain" step="0.01" min="0" />
-                    </div>
-
-                    <div class="sub-section">
-                        <button id="filter">Filter</button>
-                        <button id="reset">Reset</button>
-                    </div>
+                    <p>Label Granularity</p>
+                    <select id="granularity-select">
+                        <option value="coarse">coarse</option>
+                        <option value="fine">fine</option>
+                    </select>
                 </div>
 
                 <div id="normalize" class="section">
@@ -53,6 +45,11 @@
                         <input type="checkbox" id="normalize-checkbox" />
                         Normalize y scale
                     </label> 
+                </div>
+
+                <div id="label-section" class="section">
+                    <p>Label</p>
+                    <select id="label-select"></select>
                 </div>
             </div>
 
