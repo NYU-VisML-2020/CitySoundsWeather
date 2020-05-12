@@ -17,7 +17,7 @@ function histogram() {
   let x = d3.scaleLinear();
   let globalYMax = 0;
   let color;
-  
+
   function chart(selection) {
     selection.each(function(nodeData, index) {
       // constants
@@ -25,10 +25,10 @@ function histogram() {
       const precip = 'precipitation[mm]'; 
       const lightgray = '#dcdcdc';
       const innerMargin = { top: 5, bottom: 5 };
-      
+
       // data preparation
       const combined = nodeData.bins;
-      
+
       const types = combined.map(d => d.type);
 
       const yMax = globalYMax ?
@@ -43,14 +43,14 @@ function histogram() {
           .paddingInner(0);
 
       const chartHeight = grid.bandwidth() - innerMargin.top - innerMargin.bottom;
-      
+
       const y = d3.scaleLinear()
           .domain([0, yMax])
           .range([chartHeight, 0]);
 
-      
+
       x.range([0, width]);
-      
+
       // create axes
 
       const xAxis = d3.axisBottom(x)
@@ -115,14 +115,14 @@ function histogram() {
           .attr('class', 'chart')
           .attr('fill', d => color(d.type))
           .attr('transform', d => `translate(0, ${grid(d.type) + innerMargin.top})`);
-      
+
       const bottomChart = charts.filter((d, i) => i === 1);
 
       bottomChart.select('.x.axis')
           .attr('transform', `translate(0, ${chartHeight})`)
           .call(xAxis)
           .call(g => g.selectAll('.domain').remove())
-      
+
       charts.select('.y.axis')
           .call(yAxis)
           .call(g => g.selectAll('.domain').remove())
@@ -179,13 +179,13 @@ function histogram() {
     x = ex;
     return chart;
   }
-  
+
   chart.yMax = function(yM) {
     if (!arguments.length) return yMax;
     globalYMax = yM;
     return chart;
   }
-  
+
   chart.color = function(c) {
     if (!arguments.length) return color;
     color = c;

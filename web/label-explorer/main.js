@@ -15,12 +15,12 @@ function manager([fine_dataset, coarse_dataset]) {
   }
 
   const binMap = b => ({x0: b.x0, x1: b.x1, length: b.length});
-  
+
   let granularity = 'coarse';
   let label = labels[granularity][0];
-  let normalize = false;
-  let group = 'node';
- 
+  let normalize = true;
+  let group = 'label';
+
   const gridSize = {
     'node': {
       'coarse': d3.range(Math.ceil(Math.sqrt(nodes.size))),
@@ -36,7 +36,7 @@ function manager([fine_dataset, coarse_dataset]) {
     'coarse': prepareDataByNode(coarse_dataset),
     'fine': prepareDataByNode(fine_dataset),
   };
-  
+
   const dataByLabel = {
     'coarse': prepareDataByLabel(coarse_dataset, 'coarse'),
     'fine': prepareDataByLabel(fine_dataset, 'fine'),
@@ -68,8 +68,8 @@ function manager([fine_dataset, coarse_dataset]) {
     const byNode = Array.from(d3.group(dataset, d => d.node),
                               ([node, values]) => ({node, values}));
 
-    const gridPositions = d3.cross(gridSize[group][granularity],
-                                   gridSize[group][granularity],
+    const gridPositions = d3.cross(gridSize['node'][granularity],
+                                   gridSize['node'][granularity],
                                    (row, col) => ({row, col}));
 
     const data = d3.zip(byNode, gridPositions)
@@ -174,6 +174,7 @@ function manager([fine_dataset, coarse_dataset]) {
     const labelSection = d3.select('#label-section');
 
     groupBySelect.node().value = group;
+    labelSection.classed('hide', group === 'label');
 
     groupBySelect.on('change', function() {
       group = this.value;
@@ -231,7 +232,7 @@ function manager([fine_dataset, coarse_dataset]) {
       left: 25,
       right: 20
     };
-    
+
     const domain = gridSize[group][granularity];
 
     const column = d3.scaleBand()
@@ -241,7 +242,7 @@ function manager([fine_dataset, coarse_dataset]) {
     const row = d3.scaleBand()
         .domain(domain)
         .range([margin.top, height - margin.bottom]);
- 
+
     hist.width(column.bandwidth())
       .height(row.bandwidth());
 
