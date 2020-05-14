@@ -48,5 +48,5 @@ You can get `./data/weather-hourly-raw.csv` from the [Iowa Environmental Mesonet
     - `spl_model_test.ipynb` uses SPL summary statistics
     - `coarse_class_prediction_model_test.ipynb` uses predicted probabilities of coarse labels
     - `fine_class_prediction_model_test.ipynb` uses predicted probabilities of fine labels
-- `prince` contains the code for getting audio embeddings and training and testing the models with them.
+- `prince` contains the code for getting audio embeddings and training and testing the models with them. This code is meant to be run on NYU's HPC cluster, prince.
 
